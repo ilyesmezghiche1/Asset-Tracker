@@ -1,0 +1,14 @@
+@import "tailwindcss";
+@source "../index.html";
+@theme {
+  --color-primary: #F5F5F3;
+  --color-badge:#EEEDFE;
+  --color-text-badge:#3C3489;
+  --color-aaa:#aaa;
+  --color-bitcoin:#22c55e;
+  --color-Ethereum:#a855f7;
+  --color-Euro:#3b82f6;
+  --color-Solana:#f59e0b;
+  --color-666:#666;
+
+}

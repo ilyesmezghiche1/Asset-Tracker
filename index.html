@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Assest tracker</title>
+    <link rel="stylesheet" href="output.css" />
+  </head>
+  <body class="bg-primary flex flex-col items-center">
+    <div
+      id="container"
+      class="flex flex-col items-center gap-5 mt-10 h-screen w-3/5"
+    >
+      <header class="flex flex-row justify-between items-center w-full">
+        <span class="text-lg font-semibold">My Portfolio</span>
+        <p class="text-xs text-gray-600 font-light">
+          Live prices : Updated just now
+        </p>
+      </header>
+      <main class="w-full flex flex-col">
+        <section id="section1" class="flex w-full p-1.5 gap-4">
+          <div class="flex-col bg-white p-4 rounded-2xl w-3/4">
+            <div class="flex flex-col gap-2 p-4">
+              <p
+                class="text-xs text-gray-300 font-medium uppercase tracking-widest mb-1"
+              >
+                total protfolio value
+              </p>
+              <p class="text-5xl font-semibold leading-none tracking-wide">
+                $14,838
+              </p>
+              <p
+                class="flex justify-center text-xs font-medium text-text-badge bg-badge w-32 px-1 py-1 rounded-3xl my-2.5"
+              >
+                4 assest tracked
+              </p>
+            </div>
+            <hr class="text-gray-300" />
+            <div class="flex w-full justify-items-start gap-12 mt-2 mb-12 p-4">
+              <div class="flex flex-col gap-1">
+                <p class="text-aaa text-xs uppercase tracking-wider">
+                  top holding
+                </p>
+                <p class="text-xl font-semibold font-mono">bitcoin</p>
+              </div>
+              <div class="flex flex-col gap-1">
+                <p class="text-aaa text-xs uppercase tracking-wider">
+                  largest share
+                </p>
+                <p class="text-xl font-semibold font-mono text-green-600">
+                  68.2%
+                </p>
+              </div>
+              <div class="flex flex-col gap-1">
+                <p class="text-aaa text-xs uppercase tracking-wider">
+                  fiat exposure
+                </p>
+                <p class="text-xl font-semibold font-mono">13.5%</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-white w-1/4 rounded-2xl p-3.5 flex flex-col gap-4">
+            <div class="flex justify-items-start mt-2">
+              <p class="text-xs text-aaa uppercase tracking-wider ">Allocation</p>
+            </div>
+            <div class="flex justify-center">
+              <canvas id="myChart" width="130" height="130"></canvas>
+            </div>
+            <div class="flex flex-col">
+              <ul class="flex flex-col gap-1 justify-items-start">
+                <li>
+                  <div class="flex justify-between items-center w-44">
+                    <div class="flex justify-self-start items-center gap-1.5">
+                      <p class="bg-bitcoin h-2 w-2 rounded-3xl"></p>
+                      <p class="text-xs text-666" >bitcoin</p>
+                    </div>
+                    <div>
+                      <p class="text-xs font-medium font-mono">68.2%</p>
+                    </div>
+                  </div>
+                </li>
+                <li>
+                  <div class="flex justify-between items-center w-44">
+                    <div class="flex justify-items-start items-center gap-1.5">
+                      <p class="bg-Ethereum h-2 w-2 rounded-3xl"></p>
+                      <p class="text-xs text-666">Ethereum</p>
+                    </div>
+                    <div>
+                      <p class="text-xs font-medium font-mono">16.0%</p>
+                    </div>
+                  </div>
+                </li>
+                <li>
+                  <div class="flex justify-between items-center w-44">
+                    <div class="flex justify-items-start items-center gap-1.5">
+                      <p class="bg-Euro h-2 w-2 rounded-3xl"></p>
+                      <p class="text-xs text-666">Euro</p>
+                    </div>
+                    <div>
+                      <p class="text-xs font-medium font-mono">13.5%</p>
+                    </div>
+                  </div>
+                </li>
+                <li>
+                  <div class="flex justify-between items-center w-44">
+                    <div class="flex justify-items-start items-center gap-1.5">
+                      <p class="bg-Solana h-2 w-2 rounded-3xl"></p>
+                      <p class="text-xs text-666">Solana</p>
+                    </div>
+                    <div>
+                      <p class="text-xs font-medium font-mono">2.5%</p>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+        <section id="sectioin2">
+          <form action=""></form>
+        </section>
+        <section id="section3">
+          <table>
+            <thead>
+              <tr>
+                <th>Assest</th>
+                <th>Quantity</th>
+                <th>Live Price</th>
+                <th>Value</th>
+                <th>Allocation</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </section>
+      </main>
+      <footer>
+        <p>assest tracker - 2026 copyright</p>
+      </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>
