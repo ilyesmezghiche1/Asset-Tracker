@@ -8,6 +8,7 @@
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
     --color-red-200: oklch(88.5% 0.062 18.334);
+    --color-red-300: oklch(80.8% 0.114 19.571);
     --color-red-500: oklch(63.7% 0.237 25.331);
     --color-green-600: oklch(62.7% 0.194 149.214);
     --color-gray-300: oklch(87.2% 0.01 258.338);
@@ -208,6 +209,33 @@
   }
 }
 @layer utilities {
+  .absolute {
+    position: absolute;
+  }
+  .fixed {
+    position: fixed;
+  }
+  .relative {
+    position: relative;
+  }
+  .top-0 {
+    top: 0;
+  }
+  .top-1 {
+    top: var(--spacing);
+  }
+  .top-5 {
+    top: calc(var(--spacing) * 5);
+  }
+  .top-9 {
+    top: calc(var(--spacing) * 9);
+  }
+  .top-9\.5 {
+    top: calc(var(--spacing) * 9.5);
+  }
+  .left-0 {
+    left: 0;
+  }
   .container {
     width: 100%;
     @media (width >= 40rem) {
@@ -225,9 +253,6 @@
     @media (width >= 96rem) {
       max-width: 96rem;
     }
-  }
-  .m-10 {
-    margin: calc(var(--spacing) * 10);
   }
   .my-2 {
     margin-block: calc(var(--spacing) * 2);
@@ -258,9 +283,6 @@
   }
   .mb-3 {
     margin-bottom: calc(var(--spacing) * 3);
-  }
-  .mb-10 {
-    margin-bottom: calc(var(--spacing) * 10);
   }
   .mb-12 {
     margin-bottom: calc(var(--spacing) * 12);
@@ -294,6 +316,12 @@
   }
   .h-screen {
     height: 100vh;
+  }
+  .max-h-\[150px\] {
+    max-height: 150px;
+  }
+  .max-h-\[300px\] {
+    max-height: 300px;
   }
   .w-1 {
     width: var(--spacing);
@@ -432,6 +460,9 @@
   }
   .justify-self-start {
     justify-self: flex-start;
+  }
+  .overflow-y-auto {
+    overflow-y: auto;
   }
   .rounded-2xl {
     border-radius: var(--radius-2xl);
@@ -701,6 +732,13 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-red-200);
+      }
+    }
+  }
+  .hover\:text-red-300 {
+    &:hover {
+      @media (hover: hover) {
+        color: var(--color-red-300);
       }
     }
   }

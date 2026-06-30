@@ -20,6 +20,7 @@
           </p>
         </div>
       </header>
+      <!-- this is section 1 it will be injected  -->
       <main class="w-full flex flex-col">
         <section id="section1" class="flex w-full p-1.5 gap-4">
           <div class="flex-col bg-white p-4 rounded-2xl w-3/4">
@@ -121,19 +122,23 @@
             </div>
           </div>
         </section>
+        <!-- this is section 2 it will be fixed here  -->
         <section id="sectioin2" class="bg-white rounded-2xl mt-3 pb-6 flex flex-col p-3.5 w-full ">
           <p class="text-[13px] font-semibold mb-3 pt-3.5">add new assest</p>
           <form id="form" class=" flex flex-row w-full justify-center gap-2.5  ">
-            <input class="text-[13px] h-9.5 rounded-[10px] border border-solid border-border bg-background px-3 w-62.75 focus:bg-white focus:outline-none focus:ring-Euro focus:ring-1" type="text" name="" placeholder="assest name (eg.bitcoin)">
-            <input class="text-[13px] h-9.5 rounded-[10px] border border-solid border-border bg-background px-3 w-31.5 focus:bg-white focus:outline-none focus:ring-Euro focus:ring-1" type="text" name="" id="" placeholder="Ticker (eg.btc)">
-            <select class="text-[13px] h-9.5 rounded-[10px] border border-solid border-border bg-background px-3 w-31.5 focus:bg-white focus:outline-none focus:ring-Euro focus:ring-1" name="" id="">
+            <div id="wraper" class="relative">
+              <input id="name" class=" text-[13px] h-9.5 rounded-[10px] border border-solid border-border bg-background px-3 w-62.75 focus:bg-white focus:outline-none focus:ring-Euro focus:ring-1" type="text" name="" placeholder="assest name (eg.bitcoin)">
+            </div>
+            <input id="Ticker" class="text-[13px] h-9.5 rounded-[10px] border border-solid border-border bg-background px-3 w-31.5 focus:bg-white focus:outline-none focus:ring-Euro focus:ring-1" type="text" name="" id="" placeholder="Ticker (eg.btc)">
+            <select id="select" class="text-[13px] h-9.5 rounded-[10px] border border-solid border-border bg-background px-3 w-31.5 focus:bg-white focus:outline-none focus:ring-Euro focus:ring-1" name="" id="">
               <option value="">Crypto</option>
               <option value="">Fiat</option>
             </select>
-            <input class="text-[13px] h-9.5 rounded-[10px] border border-solid border-border bg-background px-3 w-31.5 focus:bg-white focus:outline-none focus:ring-Euro focus:ring-1" type="number" name="" id="" placeholder="Quantity">
-            <input class="h-9.5 text-[13px] text-white px-5 bg-btn rounded-[10px] font-semibold cursor-pointer w-19.5" type="button" value="+ Add">
+            <input id="Quantity" class="text-[13px] h-9.5 rounded-[10px] border border-solid border-border bg-background px-3 w-31.5 focus:bg-white focus:outline-none focus:ring-Euro focus:ring-1" type="number" name="" id="" placeholder="Quantity">
+            <input id="btn" class="h-9.5 text-[13px] text-white px-5 bg-btn rounded-[10px] font-semibold cursor-pointer w-19.5" type="button" value="+ Add">
           </form>
         </section>
+        <!-- this is section 3 it will be injected  -->
         <section id="section3" class="w-full  ">
           <table class="w-full  bg-white rounded-2xl mt-4 ">
             <thead class="bg-tablehead border-b border-b-borderb ">
@@ -274,7 +279,7 @@
                   </div>
                 </td>
                 <td>
-                  <input class="text-xl text-bbb hover:text-red-500 cursor-pointer hover:ring-1 hover:ring-red-500 px-2 hover:bg-red-200" type="button" value="x">
+                  <input class="text-xl  text-bbb hover:text-red-500 cursor-pointer hover:ring-1 hover:ring-red-500 px-2 hover:bg-red-200" type="button" value="x">
                 </td>
 
               </tr>
@@ -288,6 +293,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="currencyName.js"></script>
     <script src="main.js"></script>
   </body>
 </html>
