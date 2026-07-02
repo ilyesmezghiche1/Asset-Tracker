@@ -1,31 +1,4 @@
-async function trying() {
-  try {
-    let result = await fetch(`https://open.er-api.com/v6/latest/USD`);
-    if (!result.ok) new Error("Failed");
-    let data = await result.json();
-    console.log(data);
-    return data;
-  } catch {
-    console.error("failed");
-    return [];
-  }
-}
-async function trying() {
-  try {
-    let result = await fetch(`https://open.er-api.com/v6/latest/USD`);
-    if (!result.ok) new Error("Failed");
-    let data = await result.json();
-    console.log(data);
-    return data;
-  } catch {
-    console.error("failed");
-    return [];
-  }
-}
-
-trying();
 const ctx = document.getElementById("myChart").getContext("2d");
-
 new Chart(ctx, {
   type: "doughnut",
   data: {
@@ -49,48 +22,132 @@ new Chart(ctx, {
 
 let nameinput = document.querySelector("#name");
 let wraper = document.querySelector("#wraper");
-let tricker= document.querySelector("#Ticker");
+let tricker = document.querySelector("#Ticker");
+let select = document.querySelector("#select");
+let coinId = document.querySelector("#coinId");
+let btn = document.querySelector("#btn");
+let Quantity = document.querySelector("#Quantity");
+select.addEventListener("change", function () {
+  console.log(select.value);
+});
 
 function getTicker() {
   let searchTerm = nameinput.value.toLowerCase();
-  let matches = currencyList.filter((item) =>
-    item.name.toLowerCase().includes(searchTerm),
-  );
+  if (searchTerm === "") {
+    wraper.querySelector(".dropdown")?.remove();
+    return;
+  }
 
+  let matches = currencyList
+    .filter((item) => item.name.toLowerCase().includes(searchTerm))
+    .map((item) => ({ id: item.code, name: item.name }));
+  // item.code ("DZD") becomes item.id so renderDropdown always sees {id, name}
+
+  renderDropdown(matches);
+}
+let debounceTimer;
+nameinput.addEventListener("input", function () {
+  clearTimeout(debounceTimer);
+  if (select.value === "Fiat") {
+    debounceTimer = setTimeout(getTicker, 300);
+  } else {
+    wraper.querySelector(".dropdown")?.remove();
+    let loading = document.createElement("div");
+    loading.className =
+      "dropdown w-62.75 bg-background rounded-[10px] absolute top-9.5 left-0 flex justify-center items-center h-9.5";
+    loading.innerHTML = `<span class="text-[13px] text-aaa">Searching...</span>`;
+    wraper.appendChild(loading);
+    debounceTimer = setTimeout(getCryptoticker, 600);
+  }
+});
+
+async function getCryptoticker() {
+  let searchTerm = nameinput.value.toLowerCase();
+  if (searchTerm === "") {
+    wraper.querySelector(".dropdown")?.remove();
+    return;
+  }
+  let results = await fetchingCrypto(searchTerm);
+  if (!results.coins) return;
+  let matches = results.coins.map((item) => ({
+    id: item.symbol,
+    name: item.name,
+    coinId: item.id,
+  }));
+  renderDropdown(matches);
+}
+
+function renderDropdown(items) {
   let curDropDown = document.createElement("div");
   curDropDown.className =
     "w-62.75 bg-background text[13px] rounded-[10px] max-h-[300px] overflow-y-auto absolute top-9.5 left-0";
-  curDropDown.innerHTML = matches
+  curDropDown.innerHTML = items
     .map(
       (item) => `
-              <div data-id="${item.code}" data-name="${item.name}" class=" h-9.5 border-b border-b-borderb cursor-pointer flex justify-center items-center ">
+              <div data-id="${item.id}" data-name="${item.name}" data-coinid="${item.coinId || ""}" class=" h-9.5 border-b border-b-borderb cursor-pointer flex justify-center items-center ">
                 <span class="text-[13px] hover:text-red-300">${item.name} </span>
               </div>
 `,
     )
     .join("");
-  console.log(matches);
-  if (searchTerm === "") {
-    curDropDown.innerHTML = "";
-  }
   wraper.querySelector(".dropdown")?.remove();
   curDropDown.classList.add("dropdown");
   wraper.appendChild(curDropDown);
-  curDropDown.addEventListener("click",function(e){
-   let clickedItem = e.target.closest("[data-id]");
-   if(!clickedItem) return;
-  nameinput.value = clickedItem.dataset.name;
-  tricker.value =clickedItem.dataset.id;
-  curDropDown.remove();
+  curDropDown.addEventListener("click", function (e) {
+    let clickedItem = e.target.closest("[data-id]");
+    if (!clickedItem) return;
+    nameinput.value = clickedItem.dataset.name;
+    tricker.value = clickedItem.dataset.id;
+    coinId.value = clickedItem.dataset.coinid || "";
+    curDropDown.remove();
+  });
+}
 
+btn.addEventListener("click", function () {
+  let portfolio = JSON.parse(localStorage.getItem("portfolio")) || [];
+  if (tricker.value === "" || Quantity.value === "" || nameinput.value === "") {
+    Swal.fire({
+      title: "field is empty !",
+      text: "you need to put all the information",
+      icon: "warning",
+      showConfirmButton: false,
+    });
+  } else {
+    let saveInformation = {
+      id: tricker.value,
+      coinId: coinId.value,
+      type: select.value,
+      amount: parseFloat(Quantity.value),
+      name: nameinput.value,
+    };
+    portfolio.push(saveInformation);
+    localStorage.setItem("portfolio", JSON.stringify(portfolio));
+    nameinput.value = "";
+    tricker.value = "";
+    Quantity.value = "";
+    select.value = "Crypto";
+    coinId.value = "";
+  }
 });
+
+async function loadPortfolio(){
+let portfolio = JSON.parse(localStorage.getItem("portfolio"))|| [];
+let cryptoAssests = portfolio.filter((assest=>assest.type ==="Crypto"));
+let ids = cryptoAssests.map((assets)=> assets.coinId).join(",");
+console.log(cryptoAssests)
+let CryptoResult = await fetchingCryptoPrices(ids);
+
+
+let fiatAssests = portfolio.filter((assets)=>assets.type==="Fiat" );
+let fiatIds = fiatAssests.map((assest)=>assest.id).join(",");
+console.log(fiatAssests);
+let fiatResults = await fetchingFiat();
+fiatAssests.forEach((asset) => {
+  let price = 1 / fiatResults.rates[asset.id];
+  console.log(asset.id, price);
+});
+
 
 
 }
-let debounceTimer;
-nameinput.addEventListener("input", function () {
-  clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(getTicker, 300);
-});
-
-
+loadPortfolio();

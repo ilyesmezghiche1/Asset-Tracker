@@ -131,9 +131,10 @@
             </div>
             <input id="Ticker" class="text-[13px] h-9.5 rounded-[10px] border border-solid border-border bg-background px-3 w-31.5 focus:bg-white focus:outline-none focus:ring-Euro focus:ring-1" type="text" name="" id="" placeholder="Ticker (eg.btc)">
             <select id="select" class="text-[13px] h-9.5 rounded-[10px] border border-solid border-border bg-background px-3 w-31.5 focus:bg-white focus:outline-none focus:ring-Euro focus:ring-1" name="" id="">
-              <option value="">Crypto</option>
-              <option value="">Fiat</option>
+              <option value="Crypto">Crypto</option>
+              <option value="Fiat">Fiat</option>
             </select>
+            <input type="hidden" id="coinId">
             <input id="Quantity" class="text-[13px] h-9.5 rounded-[10px] border border-solid border-border bg-background px-3 w-31.5 focus:bg-white focus:outline-none focus:ring-Euro focus:ring-1" type="number" name="" id="" placeholder="Quantity">
             <input id="btn" class="h-9.5 text-[13px] text-white px-5 bg-btn rounded-[10px] font-semibold cursor-pointer w-19.5" type="button" value="+ Add">
           </form>
@@ -292,8 +293,10 @@
       </footer>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="currencyName.js"></script>
-    <script src="main.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script defer src="api.js"></script>
+    <script defer src="currencyName.js"></script>
+    <script defer src="main.js"></script>
   </body>
 </html>
