@@ -130,24 +130,74 @@ btn.addEventListener("click", function () {
   }
 });
 
-async function loadPortfolio(){
-let portfolio = JSON.parse(localStorage.getItem("portfolio"))|| [];
-let cryptoAssests = portfolio.filter((assest=>assest.type ==="Crypto"));
-let ids = cryptoAssests.map((assets)=> assets.coinId).join(",");
-console.log(cryptoAssests)
-let CryptoResult = await fetchingCryptoPrices(ids);
+async function loadPortfolio() {
+  let portfolio = JSON.parse(localStorage.getItem("portfolio")) || [];
+  let cryptoAssests = portfolio.filter((assest) => assest.type === "Crypto");
+  let ids = cryptoAssests.map((assets) => assets.coinId).join(",");
+  let CryptoResult = await fetchingCryptoPrices(ids);
+  let cryptoWithePrice = cryptoAssests.map((asset) => {
+    let price = parseFloat((CryptoResult[asset.coinId].usd).toFixed(3));
+    let value = parseFloat((asset.amount * price).toFixed(3));
+    return { ...asset, livePrice: price, value: value };
+  });
 
+  let fiatAssests = portfolio.filter((assets) => assets.type === "Fiat");
+  let fiatIds = fiatAssests.map((assest) => assest.id).join(",");
+  let fiatResults = await fetchingFiat(fiatIds);
+  let fiatWithePrice=fiatAssests.map((asset) => {
+    let price = parseFloat((1 / fiatResults.rates[asset.id]).toFixed(3));
+    let value = parseFloat((asset.amount * price).toFixed(3));
+     return { ...asset, livePrice: price, value: value };
+  });
+  let fullportfolio = [...cryptoWithePrice,...fiatWithePrice];
+  console.log(fullportfolio);
+  let totalValue = fullportfolio.reduce((accumulator, asset)=>{
+   return accumulator + asset.value},0);
+  let thePrortfolio = fullportfolio.map((asset)=>{
+    let allocation = (asset.value / totalValue)* 100;
+    return{...asset,allocation:allocation};
+  });
 
-let fiatAssests = portfolio.filter((assets)=>assets.type==="Fiat" );
-let fiatIds = fiatAssests.map((assest)=>assest.id).join(",");
-console.log(fiatAssests);
-let fiatResults = await fetchingFiat();
-fiatAssests.forEach((asset) => {
-  let price = 1 / fiatResults.rates[asset.id];
-  console.log(asset.id, price);
-});
-
-
-
+  return thePrortfolio;
 }
-loadPortfolio();
+
+
+let tbody = document.querySelector("tbody");
+function rendertable() {
+  let tableInforamtion
+
+  let tr = document.createElement("tr");
+  tr.className = "h-16.75 px-4.5 py-3.5 border-b border-b-borderb";
+  tr.innerHTML = `
+    <td class="w-57.25">
+                  <div class="flex items-center gap-2 pl-4.5">
+                      <span class="h-9.5 w-9.5 rounded-[10px] bg-bt text-[11px] text-bttext font-bold flex justify-center items-center tracking-wide"> BTC </span>
+                    <div class="flex flex-col ">
+                      <span class="font-semibold text-[14px]">Bitcoin</span>
+                      <span class="text-[11px] font-mono text-bbb ">Crypto .BTC</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="w-28.75 pl-4.5" >
+                  <p class="text-[13px] text-aaa font-mono">0.35</p>
+                </td>
+                <td class="w-28.75 ">
+                  <p class="text-[13px] font-mono ">$28,840.00</p>
+                </td>
+                <td class="w-28.75">
+                  <p class="text-[13px] font-mono " >$10,094.00</p>
+                </td>
+                <td class="w-32.25">
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-15 h-1 bg-bitcoin rounded-[10px]"></span>
+                    <span class="font-mono text-xs text-bbb">68.2%</span>
+                  </div>
+                </td>
+                <td>
+                  <input class="text-xl text-bbb hover:text-red-500 cursor-pointer hover:ring-1 hover:ring-red-500 px-2 hover:bg-red-200" type="button" value="x">
+                </td>
+
+  `;
+  tbody.appendChild(tr);
+}
+rendertable();

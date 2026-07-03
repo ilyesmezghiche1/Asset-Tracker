@@ -17,7 +17,6 @@ async function fetchingFiat() {
     let result = await fetch(`https://open.er-api.com/v6/latest/USD`);
     if (!result.ok) throw new Error("Failed");
     let data = await result.json();
-    console.log(data);
     return data;
   } catch {
     console.error("failed");
@@ -31,7 +30,6 @@ async function fetchingCryptoPrices(ids) {
     );
     if (!result.ok) throw new Error("Failed");
     let data = await result.json();
-    console.log(data);
     return data;
   } catch {
     console.error("failed");
