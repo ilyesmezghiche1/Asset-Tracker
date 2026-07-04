@@ -4,5 +4,106 @@ toghether so i hardcoded and array of the currency because the global currency i
 the other challenge i get it's i worte alot of code here i can work withe oop and save me alot of line but no this project its for learning perpesses so i write the code for now in the future and in real project i thought about obtemesation and oop
 
 the other challenge is the crypto api i used hase limited fetching and I need to do the fetching 2 times here for the same result
-and that cause bug so i read about it and descovery cashing and that what i used here 
+and that cause bug so i read about it and descovery cashing and that what i used here
 
+<section id="section1" class="flex w-full p-1.5 gap-4">
+          <div class="flex-col bg-white p-4 rounded-2xl w-3/4">
+            <div class="flex flex-col gap-2 p-4">
+              <p
+                class="text-xs text-gray-300 font-medium uppercase tracking-widest mb-1"
+              >
+                total protfolio value
+              </p>
+              <p class="text-5xl font-semibold leading-none tracking-wide">
+                $14,838
+              </p>
+              <p
+                class="flex justify-center text-xs font-medium text-text-badge bg-badge w-32 px-1 py-1 rounded-3xl my-2.5"
+              >
+                4 assest tracked
+              </p>
+            </div>
+            <hr class="text-gray-300" />
+            <div class="flex w-full justify-items-start gap-12 mt-2 mb-12 p-4">
+              <div class="flex flex-col gap-1">
+                <p class="text-aaa text-xs uppercase tracking-wider">
+                  top holding
+                </p>
+                <p class="text-xl font-semibold font-mono">bitcoin</p>
+              </div>
+              <div class="flex flex-col gap-1">
+                <p class="text-aaa text-xs uppercase tracking-wider">
+                  largest share
+                </p>
+                <p class="text-xl font-semibold font-mono text-green-600">
+                  68.2%
+                </p>
+              </div>
+              <div class="flex flex-col gap-1">
+                <p class="text-aaa text-xs uppercase tracking-wider">
+                  fiat exposure
+                </p>
+                <p class="text-xl font-semibold font-mono">13.5%</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-white w-1/4 rounded-2xl p-3.5 flex flex-col gap-4">
+            <div class="flex justify-items-start mt-2">
+              <p class="text-xs text-aaa uppercase tracking-wider">
+                Allocation
+              </p>
+            </div>
+            <div class="flex justify-center">
+              <canvas id="myChart" width="130" height="130"></canvas>
+            </div>
+            <div class="flex flex-col">
+              <ul class="flex flex-col gap-1 justify-items-start">
+                <li>
+                  <div class="flex justify-between items-center w-44">
+                    <div class="flex justify-self-start items-center gap-1.5">
+                      <p class="bg-bitcoin h-2 w-2 rounded-3xl"></p>
+                      <p class="text-xs text-666">bitcoin</p>
+                    </div>
+                    <div>
+                      <p class="text-xs font-medium font-mono">68.2%</p>
+                    </div>
+                  </div>
+                </li>
+                <li>
+                  <div class="flex justify-between items-center w-44">
+                    <div class="flex justify-items-start items-center gap-1.5">
+                      <p class="bg-Ethereum h-2 w-2 rounded-3xl"></p>
+                      <p class="text-xs text-666">Ethereum</p>
+                    </div>
+                    <div>
+                      <p class="text-xs font-medium font-mono">16.0%</p>
+                    </div>
+                  </div>
+                </li>
+                <li>
+                  <div class="flex justify-between items-center w-44">
+                    <div class="flex justify-items-start items-center gap-1.5">
+                      <p class="bg-Euro h-2 w-2 rounded-3xl"></p>
+                      <p class="text-xs text-666">Euro</p>
+                    </div>
+                    <div>
+                      <p class="text-xs font-medium font-mono">13.5%</p>
+                    </div>
+                  </div>
+                </li>
+                <li>
+                  <div class="flex justify-between items-center w-44">
+                    <div class="flex justify-items-start items-center gap-1.5">
+                      <p class="bg-Solana h-2 w-2 rounded-3xl"></p>
+                      <p class="text-xs text-666">Solana</p>
+                    </div>
+                    <div>
+                      <p class="text-xs font-medium font-mono">2.5%</p>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+        

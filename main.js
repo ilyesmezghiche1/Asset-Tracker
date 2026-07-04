@@ -121,7 +121,7 @@ btn.addEventListener("click", function () {
     };
     portfolio.push(saveInformation);
     localStorage.setItem("portfolio", JSON.stringify(portfolio));
-    rendertable();
+    renderAll();
     nameinput.value = "";
     tricker.value = "";
     Quantity.value = "";
@@ -129,13 +129,19 @@ btn.addEventListener("click", function () {
     coinId.value = "";
   }
 });
-
+function getHueFromId(id) {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = id.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return Math.abs(hash) % 360;
+}
 async function loadPortfolio() {
   let portfolio = JSON.parse(localStorage.getItem("portfolio")) || [];
   let cryptoAssests = portfolio.filter((assest) => assest.type === "Crypto");
- let cryptoIds = cryptoAssests.map((assets) => assets.coinId);
- let { frecheEnought, needToFetching } = getChachedPrices(cryptoIds);
- let CryptoResult = await getUpdatedPrices(needToFetching, frecheEnought);
+  let cryptoIds = cryptoAssests.map((assets) => assets.coinId);
+  let { frecheEnought, needToFetching } = getChachedPrices(cryptoIds);
+  let CryptoResult = await getUpdatedPrices(needToFetching, frecheEnought);
   let cryptoWithePrice = cryptoAssests.map((asset) => {
     let price = parseFloat(CryptoResult[asset.coinId].toFixed(4));
     let value = parseFloat((asset.amount * price).toFixed(4));
@@ -156,21 +162,23 @@ async function loadPortfolio() {
     return accumulator + asset.value;
   }, 0);
   // i use this algorithme for store deffrent color every time and calcule the allocation
-  let startPosition = Math.floor(Math.random() * 360);
-  let step = 360 / fullportfolio.length;
-  let jitterRange = step * 0.3;
+
   let thePrortfolio = fullportfolio.map((asset, index) => {
-    let jitter = Math.floor(Math.random() * jitterRange * 2) - jitterRange;
-    let hue = (startPosition + index * step + jitter) % 360;
+    let hue = getHueFromId(asset.id);
     let allocation = parseFloat(((asset.value / totalValue) * 100).toFixed(2));
     return { ...asset, allocation: allocation, hue: hue };
   });
   return thePrortfolio;
 }
 let tbody = document.querySelector("tbody");
-async function rendertable() {
+async function renderAll() {
   let portfolioData = await loadPortfolio();
-  console.log(portfolioData);
+  rendertable(portfolioData);
+  renderSummury(portfolioData);
+}
+renderAll();
+
+async function rendertable(portfolioData) {
   tbody.innerHTML = portfolioData
     .map(
       (asset) =>
@@ -211,12 +219,11 @@ async function rendertable() {
     )
     .join("");
 }
-rendertable();
 function removeAssets(idtoremove) {
   let portfolio = JSON.parse(localStorage.getItem("portfolio")) || [];
   let updatePortfolio = portfolio.filter((asset) => asset.id !== idtoremove);
   localStorage.setItem("portfolio", JSON.stringify(updatePortfolio));
-  rendertable();
+  renderAll();
 }
 tbody.addEventListener("click", function (asset) {
   let assestClicked = asset.target;
@@ -225,35 +232,106 @@ tbody.addEventListener("click", function (asset) {
     removeAssets(idtoremove);
   }
 });
-const STALE_WINDOW =60000;
-function getChachedPrices(ids){
-let priceChache = JSON.parse(localStorage.getItem("priceChache")) || {};
-  let frecheEnought ={};
-  let needToFetching =[];
-    for(let id of ids){
 
-      let isFreche = priceChache[id] && (Date.now() - priceChache[id].fetchedAt <= STALE_WINDOW);
-      if(isFreche){
-        frecheEnought[id]=priceChache[id].price;
-      }else{
-        needToFetching.push(id)
-      }
-    }
-    return {frecheEnought , needToFetching };
-}
-async function getUpdatedPrices(needToFetching , frecheEnought ){
+function getChachedPrices(ids) {
+  const STALE_WINDOW = 60000;
   let priceChache = JSON.parse(localStorage.getItem("priceChache")) || {};
-  let newResult ={};
-    if (needToFetching.length !== 0){
-        newResult = await fetchingCryptoPrices(needToFetching);
+  let frecheEnought = {};
+  let needToFetching = [];
+  for (let id of ids) {
+    let isFreche =
+      priceChache[id] && Date.now() - priceChache[id].fetchedAt <= STALE_WINDOW;
+    if (isFreche) {
+      frecheEnought[id] = priceChache[id].price;
+    } else {
+      needToFetching.push(id);
+    }
+  }
+  return { frecheEnought, needToFetching };
+}
+async function getUpdatedPrices(needToFetching, frecheEnought) {
+  let priceChache = JSON.parse(localStorage.getItem("priceChache")) || {};
+  let newResult = {};
+  if (needToFetching.length !== 0) {
+    newResult = await fetchingCryptoPrices(needToFetching);
   }
   let frecheFetched = {};
-  for(let id of Object.keys(newResult)){
+  for (let id of Object.keys(newResult)) {
     let price = newResult[id].usd;
-    priceChache[id]={price:price , fetchedAt:Date.now()};
-    frecheFetched[id]= price;
+    priceChache[id] = { price: price, fetchedAt: Date.now() };
+    frecheFetched[id] = price;
   }
   localStorage.setItem("priceChache", JSON.stringify(priceChache));
-  return {...frecheEnought , ...frecheFetched}
+  return { ...frecheEnought, ...frecheFetched };
+}
+let summury = document.querySelector("#section1");
+function renderSummury(portfolioData) {
+  summury.querySelector(".summary-card")?.remove();
+  if (portfolioData.length === 0) {
+    let emptyContainer = document.createElement("div");
+    emptyContainer.className =
+      "flex-col bg-white p-4 rounded-2xl w-3/4 summary-card";
+    emptyContainer.innerHTML = `
+      <div class="flex flex-col items-center justify-center gap-2 p-8 text-center">
+        <p class="text-lg font-semibold">No assets yet</p>
+        <p class="text-sm text-aaa">Choose a type(Crypto/Fiat), search for an asset, and hit "+ Add" to start tracking your portfolio.</p>
+      </div>
+    `;
+    summury.prepend(emptyContainer);
+    return;
+  }
+  let topHolding = portfolioData.reduce((max, asset) =>
+    asset.value > max.value ? asset : max,
+  );
+  let totalValue = portfolioData.reduce((acc, asset) => acc + asset.value, 0);
+  let theTotalValue = totalValue.toLocaleString();
+  let fiatValue = portfolioData
+    .filter((asset) => asset.type === "Fiat")
+    .reduce((acc, asset) => acc + asset.value, 0);
+  let fiatExposure = parseFloat(((fiatValue / totalValue) * 100).toFixed(2));
+  let container = document.createElement("div");
+  container.className = "flex-col bg-white p-4 rounded-2xl w-3/4 summary-card";
 
+  container.innerHTML = `
+              <div class="flex flex-col gap-2 p-4">
+              <p
+                class="text-xs text-gray-300 font-medium uppercase tracking-widest mb-1"
+              >
+                total protfolio value
+              </p>
+              <p class="text-5xl font-semibold leading-none tracking-wide">
+                $${theTotalValue}
+              </p>
+              <p
+                class="flex justify-center text-xs font-medium text-text-badge bg-badge w-32 px-1 py-1 rounded-3xl my-2.5"
+              >
+                ${portfolioData.length} assest tracked
+              </p>
+            </div>
+            <hr class="text-gray-300" />
+            <div class="flex w-full justify-items-start gap-12 mt-2 mb-12 p-4">
+              <div class="flex flex-col gap-1">
+                <p class="text-aaa text-xs uppercase tracking-wider">
+                  top holding
+                </p>
+                <p class="text-xl font-semibold font-mono">${topHolding.name}</p>
+              </div>
+              <div class="flex flex-col gap-1">
+                <p class="text-aaa text-xs uppercase tracking-wider">
+                  largest share
+                </p>
+                <p class="text-xl font-semibold font-mono text-green-600">
+                  ${topHolding.allocation}%
+                </p>
+              </div>
+              <div class="flex flex-col gap-1">
+                <p class="text-aaa text-xs uppercase tracking-wider">
+                  fiat exposure
+                </p>
+                <p class="text-xl font-semibold font-mono">${fiatExposure}%</p>
+              </div>
+            </div>
+          </div>
+  `;
+  summury.prepend(container);
 }
