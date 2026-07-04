@@ -3,36 +3,6 @@ toghether so i hardcoded and array of the currency because the global currency i
 
 the other challenge i get it's i worte alot of code here i can work withe oop and save me alot of line but no this project its for learning perpesses so i write the code for now in the future and in real project i thought about obtemesation and oop
 
+the other challenge is the crypto api i used hase limited fetching and I need to do the fetching 2 times here for the same result
+and that cause bug so i read about it and descovery cashing and that what i used here 
 
-   <tbody id="tbody">
-              <tr class="h-16.75 px-4.5 py-3.5 border-b border-b-borderb">
-                <td class="w-57.25">
-                  <div class="flex items-center gap-2 pl-4.5">
-                      <span class="h-9.5 w-9.5 rounded-[10px] bg-bt text-[11px] text-bttext font-bold flex justify-center items-center tracking-wide"> BTC </span>
-                    <div class="flex flex-col ">
-                      <span class="font-semibold text-[14px]">Bitcoin</span>
-                      <span class="text-[11px] font-mono text-bbb ">Crypto .BTC</span>
-                    </div>
-                  </div>
-                </td>
-                <td class="w-28.75 pl-4.5" >
-                  <p class="text-[13px] text-aaa font-mono">0.35</p>
-                </td>
-                <td class="w-28.75 ">
-                  <p class="text-[13px] font-mono ">$28,840.00</p>
-                </td>
-                <td class="w-28.75">
-                  <p class="text-[13px] font-mono " >$10,094.00</p>
-                </td>
-                <td class="w-32.25">
-                  <div class="flex items-center gap-2.5">
-                    <span class="w-15 h-1 bg-bitcoin rounded-[10px]"></span>
-                    <span class="font-mono text-xs text-bbb">68.2%</span>
-                  </div>
-                </td>
-                <td>
-                  <input class="text-xl text-bbb hover:text-red-500 cursor-pointer hover:ring-1 hover:ring-red-500 px-2 hover:bg-red-200" type="button" value="x">
-                </td>
-              </tr>
-
-            </tbody>

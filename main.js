@@ -41,7 +41,6 @@ function getTicker() {
   let matches = currencyList
     .filter((item) => item.name.toLowerCase().includes(searchTerm))
     .map((item) => ({ id: item.code, name: item.name }));
-  // item.code ("DZD") becomes item.id so renderDropdown always sees {id, name}
 
   renderDropdown(matches);
 }
@@ -122,6 +121,7 @@ btn.addEventListener("click", function () {
     };
     portfolio.push(saveInformation);
     localStorage.setItem("portfolio", JSON.stringify(portfolio));
+    rendertable();
     nameinput.value = "";
     tricker.value = "";
     Quantity.value = "";
@@ -133,71 +133,127 @@ btn.addEventListener("click", function () {
 async function loadPortfolio() {
   let portfolio = JSON.parse(localStorage.getItem("portfolio")) || [];
   let cryptoAssests = portfolio.filter((assest) => assest.type === "Crypto");
-  let ids = cryptoAssests.map((assets) => assets.coinId).join(",");
-  let CryptoResult = await fetchingCryptoPrices(ids);
+ let cryptoIds = cryptoAssests.map((assets) => assets.coinId);
+ let { frecheEnought, needToFetching } = getChachedPrices(cryptoIds);
+ let CryptoResult = await getUpdatedPrices(needToFetching, frecheEnought);
   let cryptoWithePrice = cryptoAssests.map((asset) => {
-    let price = parseFloat((CryptoResult[asset.coinId].usd).toFixed(3));
-    let value = parseFloat((asset.amount * price).toFixed(3));
+    let price = parseFloat(CryptoResult[asset.coinId].toFixed(4));
+    let value = parseFloat((asset.amount * price).toFixed(4));
     return { ...asset, livePrice: price, value: value };
   });
 
   let fiatAssests = portfolio.filter((assets) => assets.type === "Fiat");
   let fiatIds = fiatAssests.map((assest) => assest.id).join(",");
   let fiatResults = await fetchingFiat(fiatIds);
-  let fiatWithePrice=fiatAssests.map((asset) => {
-    let price = parseFloat((1 / fiatResults.rates[asset.id]).toFixed(3));
-    let value = parseFloat((asset.amount * price).toFixed(3));
-     return { ...asset, livePrice: price, value: value };
+  let fiatWithePrice = fiatAssests.map((asset) => {
+    let price = parseFloat((1 / fiatResults.rates[asset.id]).toFixed(4));
+    let value = parseFloat((asset.amount * price).toFixed(4));
+    return { ...asset, livePrice: price, value: value };
   });
-  let fullportfolio = [...cryptoWithePrice,...fiatWithePrice];
+  let fullportfolio = [...cryptoWithePrice, ...fiatWithePrice];
   console.log(fullportfolio);
-  let totalValue = fullportfolio.reduce((accumulator, asset)=>{
-   return accumulator + asset.value},0);
-  let thePrortfolio = fullportfolio.map((asset)=>{
-    let allocation = (asset.value / totalValue)* 100;
-    return{...asset,allocation:allocation};
+  let totalValue = fullportfolio.reduce((accumulator, asset) => {
+    return accumulator + asset.value;
+  }, 0);
+  // i use this algorithme for store deffrent color every time and calcule the allocation
+  let startPosition = Math.floor(Math.random() * 360);
+  let step = 360 / fullportfolio.length;
+  let jitterRange = step * 0.3;
+  let thePrortfolio = fullportfolio.map((asset, index) => {
+    let jitter = Math.floor(Math.random() * jitterRange * 2) - jitterRange;
+    let hue = (startPosition + index * step + jitter) % 360;
+    let allocation = parseFloat(((asset.value / totalValue) * 100).toFixed(2));
+    return { ...asset, allocation: allocation, hue: hue };
   });
-
   return thePrortfolio;
 }
-
-
 let tbody = document.querySelector("tbody");
-function rendertable() {
-  let tableInforamtion
-
-  let tr = document.createElement("tr");
-  tr.className = "h-16.75 px-4.5 py-3.5 border-b border-b-borderb";
-  tr.innerHTML = `
-    <td class="w-57.25">
+async function rendertable() {
+  let portfolioData = await loadPortfolio();
+  console.log(portfolioData);
+  tbody.innerHTML = portfolioData
+    .map(
+      (asset) =>
+        `<tr class="h-16.75 px-4.5 py-3.5 border-b border-b-borderb">
+      <td class="w-57.25">
                   <div class="flex items-center gap-2 pl-4.5">
-                      <span class="h-9.5 w-9.5 rounded-[10px] bg-bt text-[11px] text-bttext font-bold flex justify-center items-center tracking-wide"> BTC </span>
+                      <span span style="background-color: hsl(${asset.hue}, 50%, 50%); color: hsla(${asset.hue}, 70%, 30%, 0.9);" class="h-9.5 w-9.5 rounded-[10px]  text-[11px]  font-bold flex justify-center items-center tracking-wide"> ${asset.id} </span>
                     <div class="flex flex-col ">
-                      <span class="font-semibold text-[14px]">Bitcoin</span>
-                      <span class="text-[11px] font-mono text-bbb ">Crypto .BTC</span>
+                      <span class="font-semibold text-[14px]">${asset.name}</span>
+                      <span class="text-[11px] font-mono text-bbb ">${asset.type} .${asset.id}</span>
                     </div>
                   </div>
                 </td>
                 <td class="w-28.75 pl-4.5" >
-                  <p class="text-[13px] text-aaa font-mono">0.35</p>
+                  <p class="text-[13px] text-aaa font-mono">${asset.amount}</p>
                 </td>
                 <td class="w-28.75 ">
-                  <p class="text-[13px] font-mono ">$28,840.00</p>
+                  <p class="text-[13px] font-mono ">$${asset.livePrice}</p>
                 </td>
                 <td class="w-28.75">
-                  <p class="text-[13px] font-mono " >$10,094.00</p>
+                  <p class="text-[13px] font-mono " >$${asset.value}</p>
                 </td>
                 <td class="w-32.25">
-                  <div class="flex items-center gap-2.5">
-                    <span class="w-15 h-1 bg-bitcoin rounded-[10px]"></span>
-                    <span class="font-mono text-xs text-bbb">68.2%</span>
-                  </div>
+                <div class="flex items-center gap-2.5">
+                  <span class="relative w-15 h-1 bg-aaa rounded-[10px] overflow-hidden inline-block">
+                  <span style="width: ${asset.allocation}%; background-color: hsl(${asset.hue}, 50%, 50%);"
+                      class="absolute top-0 left-0 h-full rounded-[10px]"></span>
+                    </span>
+                  <span class="font-mono text-xs text-bbb">${asset.allocation}%</span>
+                </div>
                 </td>
                 <td>
-                  <input class="text-xl text-bbb hover:text-red-500 cursor-pointer hover:ring-1 hover:ring-red-500 px-2 hover:bg-red-200" type="button" value="x">
-                </td>
+                  <input id="cancelBtn" data-id="${asset.id}" class="text-xl text-bbb hover:text-red-500 cursor-pointer hover:ring-1 hover:ring-red-500 px-2 hover:bg-red-200" type="button" value="x">
+        </td>
+     </tr>
 
-  `;
-  tbody.appendChild(tr);
+  `,
+    )
+    .join("");
 }
 rendertable();
+function removeAssets(idtoremove) {
+  let portfolio = JSON.parse(localStorage.getItem("portfolio")) || [];
+  let updatePortfolio = portfolio.filter((asset) => asset.id !== idtoremove);
+  localStorage.setItem("portfolio", JSON.stringify(updatePortfolio));
+  rendertable();
+}
+tbody.addEventListener("click", function (asset) {
+  let assestClicked = asset.target;
+  if (assestClicked.id === "cancelBtn") {
+    let idtoremove = assestClicked.dataset.id;
+    removeAssets(idtoremove);
+  }
+});
+const STALE_WINDOW =60000;
+function getChachedPrices(ids){
+let priceChache = JSON.parse(localStorage.getItem("priceChache")) || {};
+  let frecheEnought ={};
+  let needToFetching =[];
+    for(let id of ids){
+
+      let isFreche = priceChache[id] && (Date.now() - priceChache[id].fetchedAt <= STALE_WINDOW);
+      if(isFreche){
+        frecheEnought[id]=priceChache[id].price;
+      }else{
+        needToFetching.push(id)
+      }
+    }
+    return {frecheEnought , needToFetching };
+}
+async function getUpdatedPrices(needToFetching , frecheEnought ){
+  let priceChache = JSON.parse(localStorage.getItem("priceChache")) || {};
+  let newResult ={};
+    if (needToFetching.length !== 0){
+        newResult = await fetchingCryptoPrices(needToFetching);
+  }
+  let frecheFetched = {};
+  for(let id of Object.keys(newResult)){
+    let price = newResult[id].usd;
+    priceChache[id]={price:price , fetchedAt:Date.now()};
+    frecheFetched[id]= price;
+  }
+  localStorage.setItem("priceChache", JSON.stringify(priceChache));
+  return {...frecheEnought , ...frecheFetched}
+
+}
