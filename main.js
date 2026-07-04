@@ -1,25 +1,3 @@
-const ctx = document.getElementById("myChart").getContext("2d");
-new Chart(ctx, {
-  type: "doughnut",
-  data: {
-    labels: ["Bitcoin", "Ethereum", "Euro", "Solana"],
-    datasets: [
-      {
-        data: [68.2, 16.0, 13.5, 2.5],
-        backgroundColor: ["#22c55e", "#a855f7", "#3b82f6", "#f59e0b"],
-        borderWidth: 0,
-      },
-    ],
-  },
-  options: {
-    responsive: false,
-    cutout: "70%", // controls the hole size
-    plugins: {
-      legend: { display: false }, // you'll build your own legend below
-    },
-  },
-});
-
 let nameinput = document.querySelector("#name");
 let wraper = document.querySelector("#wraper");
 let tricker = document.querySelector("#Ticker");
@@ -175,6 +153,7 @@ async function renderAll() {
   let portfolioData = await loadPortfolio();
   rendertable(portfolioData);
   renderSummury(portfolioData);
+  renderChart(portfolioData);
 }
 renderAll();
 
@@ -335,3 +314,72 @@ function renderSummury(portfolioData) {
   `;
   summury.prepend(container);
 }
+let chartInstance = null;
+function renderChart(portfolioData){
+  summury.querySelector(".summary-chart")?.remove();
+
+  let legendItems = portfolioData.map((asset) => `
+    <li>
+      <div class="flex justify-between items-center w-44">
+        <div class="flex justify-self-start items-center gap-1.5">
+          <p style="background-color: hsl(${asset.hue}, 50%, 50%);" class="h-2 w-2 rounded-3xl"></p>
+          <p class="text-xs text-666">${asset.name}</p>
+        </div>
+        <div>
+          <p class="text-xs font-medium font-mono">${asset.allocation}%</p>
+        </div>
+      </div>
+    </li>
+  `).join("");
+
+  let chartContainer = document.createElement("div");
+  chartContainer.className = "bg-white w-1/4 rounded-2xl p-3.5 flex flex-col gap-4 summary-chart";
+  chartContainer.innerHTML = `
+    <div class="flex justify-items-start mt-2">
+      <p class="text-xs text-aaa uppercase tracking-wider">
+        Allocation
+      </p>
+    </div>
+    <div class="flex justify-center">
+      <canvas id="myChart" width="130" height="130"></canvas>
+    </div>
+    <div class="flex flex-col">
+      <ul class="flex flex-col gap-1 justify-items-start">
+        ${legendItems}
+      </ul>
+    </div>
+  `;
+
+  summury.appendChild(chartContainer);
+
+  let labels = portfolioData.map((asset) => asset.name);
+  let labelsData = portfolioData.map((asset) => asset.allocation);
+  let labelBackgoundColor = portfolioData.map((asset) => `hsl(${asset.hue}, 60%, 50%)`);
+
+  if (chartInstance) {
+    chartInstance.destroy();
+  }
+
+  const ctx = document.getElementById("myChart").getContext("2d");
+  chartInstance = new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          data: labelsData,
+          backgroundColor: labelBackgoundColor,
+          borderWidth: 0,
+        },
+      ],
+    },
+    options: {
+      responsive: false,
+      cutout: "70%",
+      plugins: {
+        legend: { display: false },
+      },
+    },
+  });
+}
+
