@@ -79,13 +79,21 @@ function renderDropdown(items) {
     curDropDown.remove();
   });
 }
+function filterSaveinformation(portfolio, saveInformation) {
+  let mathce = portfolio.find((asset) => asset.id === saveInformation.id);
+  if (mathce) {
+    mathce.amount = saveInformation.amount + mathce.amount;
+  } else {
+    portfolio.push(saveInformation);
+  }
+}
 
 btn.addEventListener("click", function () {
   let portfolio = JSON.parse(localStorage.getItem("portfolio")) || [];
   if (tricker.value === "" || Quantity.value === "" || nameinput.value === "") {
     Swal.fire({
-      title: "field is empty !",
-      text: "you need to put all the information",
+      title: "Incomplete Form",
+      text: "All fields are required to add this asset to your portfolio.",
       icon: "warning",
       showConfirmButton: false,
     });
@@ -97,14 +105,40 @@ btn.addEventListener("click", function () {
       amount: parseFloat(Quantity.value),
       name: nameinput.value,
     };
-    portfolio.push(saveInformation);
-    localStorage.setItem("portfolio", JSON.stringify(portfolio));
-    renderAll();
-    nameinput.value = "";
-    tricker.value = "";
-    Quantity.value = "";
-    select.value = "Crypto";
-    coinId.value = "";
+
+    let duplicate = portfolio.some((asset) => asset.id === saveInformation.id);
+
+    if (duplicate) {
+      Swal.fire({
+        title: "Duplicate Asset",
+        text: "This asset already exists in your portfolio. Would you like to add to the existing amount?",
+        icon: "warning",
+        showConfirmButton: true,
+        showDenyButton: true,
+        confirmButtonText: "Add",
+        denyButtonText: "Cancel",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          filterSaveinformation(portfolio, saveInformation);
+          localStorage.setItem("portfolio", JSON.stringify(portfolio));
+          renderAll();
+        }
+        nameinput.value = "";
+        tricker.value = "";
+        Quantity.value = "";
+        select.value = "Crypto";
+        coinId.value = "";
+      });
+    } else {
+      filterSaveinformation(portfolio, saveInformation);
+      localStorage.setItem("portfolio", JSON.stringify(portfolio));
+      renderAll();
+      nameinput.value = "";
+      tricker.value = "";
+      Quantity.value = "";
+      select.value = "Crypto";
+      coinId.value = "";
+    }
   }
 });
 function getHueFromId(id) {
@@ -190,9 +224,16 @@ async function rendertable(portfolioData) {
                 </div>
                 </td>
                 <td>
-                  <input id="cancelBtn" data-id="${asset.id}" class="text-xl text-bbb hover:text-red-500 cursor-pointer hover:ring-1 hover:ring-red-500 px-2 hover:bg-red-200" type="button" value="x">
-        </td>
-     </tr>
+                 <button
+                    class="cancelBtn text-bbb hover:text-red-500 cursor-pointer   px-2 "
+                    data-id="${asset.id}"
+                      >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </td>
+              </tr>
 
   `,
     )
@@ -204,9 +245,9 @@ function removeAssets(idtoremove) {
   localStorage.setItem("portfolio", JSON.stringify(updatePortfolio));
   renderAll();
 }
-tbody.addEventListener("click", function (asset) {
-  let assestClicked = asset.target;
-  if (assestClicked.id === "cancelBtn") {
+tbody.addEventListener("click", function (e) {
+  let assestClicked = e.target.closest(".cancelBtn");
+  if (assestClicked) {
     let idtoremove = assestClicked.dataset.id;
     removeAssets(idtoremove);
   }
@@ -315,10 +356,12 @@ function renderSummury(portfolioData) {
   summury.prepend(container);
 }
 let chartInstance = null;
-function renderChart(portfolioData){
+function renderChart(portfolioData) {
   summury.querySelector(".summary-chart")?.remove();
 
-  let legendItems = portfolioData.map((asset) => `
+  let legendItems = portfolioData
+    .map(
+      (asset) => `
     <li>
       <div class="flex justify-between items-center w-44">
         <div class="flex justify-self-start items-center gap-1.5">
@@ -330,10 +373,13 @@ function renderChart(portfolioData){
         </div>
       </div>
     </li>
-  `).join("");
+  `,
+    )
+    .join("");
 
   let chartContainer = document.createElement("div");
-  chartContainer.className = "bg-white w-1/4 rounded-2xl p-3.5 flex flex-col gap-4 summary-chart";
+  chartContainer.className =
+    "bg-white w-1/4 rounded-2xl p-3.5 flex flex-col gap-4 summary-chart";
   chartContainer.innerHTML = `
     <div class="flex justify-items-start mt-2">
       <p class="text-xs text-aaa uppercase tracking-wider">
@@ -354,7 +400,9 @@ function renderChart(portfolioData){
 
   let labels = portfolioData.map((asset) => asset.name);
   let labelsData = portfolioData.map((asset) => asset.allocation);
-  let labelBackgoundColor = portfolioData.map((asset) => `hsl(${asset.hue}, 60%, 50%)`);
+  let labelBackgoundColor = portfolioData.map(
+    (asset) => `hsl(${asset.hue}, 60%, 50%)`,
+  );
 
   if (chartInstance) {
     chartInstance.destroy();
@@ -382,4 +430,3 @@ function renderChart(portfolioData){
     },
   });
 }
-
