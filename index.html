@@ -9,7 +9,7 @@
   <body class="bg-primary flex flex-col items-center">
     <div
       id="container"
-      class="flex flex-col items-center gap-5 mt-10 h-screen w-3/5"
+      class="flex flex-col items-center gap-5 mt-10 h-screen w-11/12 md:w-4/5 xl:w-3/5"
     >
       <header class="flex flex-row justify-between items-center w-full">
         <span class="text-lg font-semibold">My Portfolio</span>
@@ -22,60 +22,74 @@
       </header>
       <!-- this is section 1 it will be injected  -->
       <main id="main" class="w-full flex flex-col">
-        <section id="section1" class="flex w-full p-1.5 gap-4"></section>
+        <section
+          id="section1"
+          class="flex flex-col md:flex-row w-full p-1.5 gap-4"
+        ></section>
         <!-- this is section 2 it will be fixed here  -->
         <section
           id="sectioin2"
           class="bg-white rounded-2xl mt-3 pb-6 flex flex-col p-3.5 w-full"
         >
           <p class="text-[13px] font-semibold mb-3 pt-3.5">add new assest</p>
-          <form id="form" class="flex flex-row w-full justify-center gap-2.5">
-            <div id="wraper" class="relative">
+          <form
+            id="form"
+            class="flex flex-col md:flex-row w-full justify-center gap-2.5"
+          >
+            <div class="flex justify-center gap-2">
+              <div class="flex flex-col gap-2 lg:flex-row">
+                <div id="wraper" class="relative">
+                  <input
+                    id="name"
+                    class="shrink-0 text-[13px] h-9.5 rounded-[10px] border border-solid border-border bg-background px-3 w-full lg:w-62.75 focus:bg-white focus:outline-none focus:ring-Euro focus:ring-1"
+                    type="text"
+                    name=""
+                    placeholder="assest name (eg.bitcoin)"
+                  />
+                </div>
+                <input
+                  id="Ticker"
+                  class="text-[13px] h-9.5 rounded-[10px] border border-solid border-border bg-background px-3 w-full lg:w-31.5 focus:bg-white focus:outline-none focus:ring-Euro focus:ring-1"
+                  type="text"
+                  name=""
+                  id=""
+                  placeholder="Ticker (eg.btc)"
+                />
+              </div>
+              <div class="flex flex-col gap-2 md:flex-row">
+                <select
+                  id="select"
+                  class="text-[13px] h-9.5 rounded-[10px] border border-solid border-border bg-background px-3 w-full lg:w-31.5 focus:bg-white focus:outline-none focus:ring-Euro focus:ring-1"
+                  name=""
+                  id=""
+                >
+                  <option value="Crypto">Crypto</option>
+                  <option value="Fiat">Fiat</option>
+                </select>
+                <input type="hidden" id="coinId" />
+                <input
+                  id="Quantity"
+                  class="text-[13px] h-9.5 rounded-[10px] border border-solid border-border bg-background px-3 w-full lg:w-31.5 focus:bg-white focus:outline-none focus:ring-Euro focus:ring-1"
+                  type="number"
+                  name=""
+                  id=""
+                  placeholder="Quantity"
+                />
+              </div>
+            </div>
+            <div class="flex justify-center">
               <input
-                id="name"
-                class="text-[13px] h-9.5 rounded-[10px] border border-solid border-border bg-background px-3 w-62.75 focus:bg-white focus:outline-none focus:ring-Euro focus:ring-1"
-                type="text"
-                name=""
-                placeholder="assest name (eg.bitcoin)"
+                id="btn"
+                class="h-9.5 text-[13px] text-white px-5 bg-btn rounded-[10px] font-semibold cursor-pointer w-19.5"
+                type="button"
+                value="+ Add"
               />
             </div>
-            <input
-              id="Ticker"
-              class="text-[13px] h-9.5 rounded-[10px] border border-solid border-border bg-background px-3 w-31.5 focus:bg-white focus:outline-none focus:ring-Euro focus:ring-1"
-              type="text"
-              name=""
-              id=""
-              placeholder="Ticker (eg.btc)"
-            />
-            <select
-              id="select"
-              class="text-[13px] h-9.5 rounded-[10px] border border-solid border-border bg-background px-3 w-31.5 focus:bg-white focus:outline-none focus:ring-Euro focus:ring-1"
-              name=""
-              id=""
-            >
-              <option value="Crypto">Crypto</option>
-              <option value="Fiat">Fiat</option>
-            </select>
-            <input type="hidden" id="coinId" />
-            <input
-              id="Quantity"
-              class="text-[13px] h-9.5 rounded-[10px] border border-solid border-border bg-background px-3 w-31.5 focus:bg-white focus:outline-none focus:ring-Euro focus:ring-1"
-              type="number"
-              name=""
-              id=""
-              placeholder="Quantity"
-            />
-            <input
-              id="btn"
-              class="h-9.5 text-[13px] text-white px-5 bg-btn rounded-[10px] font-semibold cursor-pointer w-19.5"
-              type="button"
-              value="+ Add"
-            />
           </form>
         </section>
         <!-- this is section 3 it will be injected  -->
         <section id="section3" class="w-full">
-          <table class="w-full bg-white rounded-2xl mt-4">
+          <table class="hidden md:table w-full bg-white rounded-2xl mt-4">
             <thead class="bg-tablehead border-b border-b-borderb">
               <tr class="py-2.5 px-4.5 h-[35.2px]">
                 <th
@@ -108,6 +122,11 @@
             </thead>
             <tbody id="tbody"></tbody>
           </table>
+
+          <div
+            id="mobileList"
+            class="md:hidden bg-white rounded-2xl mt-4"
+          ></div>
         </section>
       </main>
       <footer class="flex justify-center items-center w-full">

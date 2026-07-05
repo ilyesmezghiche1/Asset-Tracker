@@ -53,11 +53,10 @@ async function getCryptoticker() {
   }));
   renderDropdown(matches);
 }
-
 function renderDropdown(items) {
   let curDropDown = document.createElement("div");
   curDropDown.className =
-    "w-62.75 bg-background text[13px] rounded-[10px] max-h-[300px] overflow-y-auto absolute top-9.5 left-0";
+    "w-full lg:w-62.75 bg-white text-[13px] rounded-[10px] max-h-[300px] overflow-y-auto absolute top-9.5 left-0 z-50 shadow-md border border-border";
   curDropDown.innerHTML = items
     .map(
       (item) => `
@@ -70,6 +69,7 @@ function renderDropdown(items) {
   wraper.querySelector(".dropdown")?.remove();
   curDropDown.classList.add("dropdown");
   wraper.appendChild(curDropDown);
+
   curDropDown.addEventListener("click", function (e) {
     let clickedItem = e.target.closest("[data-id]");
     if (!clickedItem) return;
@@ -78,6 +78,22 @@ function renderDropdown(items) {
     coinId.value = clickedItem.dataset.coinid || "";
     curDropDown.remove();
   });
+
+  function closeOnOutsideClick(e) {
+    if (!wraper.contains(e.target)) {
+      curDropDown.remove();
+      document.removeEventListener("click", closeOnOutsideClick);
+      window.removeEventListener("scroll", closeOnScroll);
+    }
+  }
+  function closeOnScroll() {
+    curDropDown.remove();
+    document.removeEventListener("click", closeOnOutsideClick);
+    window.removeEventListener("scroll", closeOnScroll);
+  }
+
+  document.addEventListener("click", closeOnOutsideClick);
+  window.addEventListener("scroll", closeOnScroll);
 }
 function filterSaveinformation(portfolio, saveInformation) {
   let mathce = portfolio.find((asset) => asset.id === saveInformation.id);
@@ -182,6 +198,7 @@ async function loadPortfolio() {
   });
   return thePrortfolio;
 }
+let mobileList = document.getElementById("mobileList");
 let tbody = document.querySelector("tbody");
 async function renderAll() {
   let portfolioData = await loadPortfolio();
@@ -190,15 +207,15 @@ async function renderAll() {
   renderChart(portfolioData);
 }
 renderAll();
-
 async function rendertable(portfolioData) {
+  // Desktop table rows
   tbody.innerHTML = portfolioData
     .map(
       (asset) =>
         `<tr class="h-16.75 px-4.5 py-3.5 border-b border-b-borderb">
       <td class="w-57.25">
                   <div class="flex items-center gap-2 pl-4.5">
-                      <span span style="background-color: hsl(${asset.hue}, 50%, 50%); color: hsla(${asset.hue}, 70%, 30%, 0.9);" class="h-9.5 w-9.5 rounded-[10px]  text-[11px]  font-bold flex justify-center items-center tracking-wide"> ${asset.id} </span>
+                      <span style="background-color: hsl(${asset.hue}, 50%, 50%); color: hsla(${asset.hue}, 70%, 30%, 0.9);" class="h-9.5 w-9.5 rounded-[10px]  text-[11px]  font-bold flex justify-center items-center tracking-wide"> ${asset.id} </span>
                     <div class="flex flex-col ">
                       <span class="font-semibold text-[14px]">${asset.name}</span>
                       <span class="text-[11px] font-mono text-bbb ">${asset.type} .${asset.id}</span>
@@ -233,18 +250,81 @@ async function rendertable(portfolioData) {
                     </svg>
                   </button>
                 </td>
-              </tr>
+              </tr>`,
+    )
+    .join("");
 
-  `,
+  // Mobile cards
+  mobileList.innerHTML = portfolioData
+    .map(
+      (asset) => `
+      <div class="border-b border-b-borderb">
+        <button class="expandBtn w-full flex items-center justify-between px-3 py-3" data-id="${asset.id}">
+          <div class="flex items-center gap-2">
+            <span style="background-color: hsl(${asset.hue}, 50%, 50%); color: hsla(${asset.hue}, 70%, 30%, 0.9);"
+              class="h-9.5 w-9.5 rounded-[10px] text-[11px] font-bold flex justify-center items-center tracking-wide">
+              ${asset.id}
+            </span>
+            <span class="font-semibold text-[14px]">${asset.name}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <p class="text-[13px] font-mono">$${asset.value}</p>
+            <svg class="w-4 h-4 chevron transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </button>
+
+        <div class="detailPanel hidden px-3 pb-3 flex flex-col gap-1.5">
+          <div class="flex justify-between text-[13px]">
+            <span class="text-bbb">Quantity</span>
+            <span class="font-mono">${asset.amount}</span>
+          </div>
+          <div class="flex justify-between text-[13px]">
+            <span class="text-bbb">Live Price</span>
+            <span class="font-mono">$${asset.livePrice}</span>
+          </div>
+          <div class="flex justify-between items-center text-[13px]">
+            <span class="text-bbb">Allocation</span>
+            <div class="flex items-center gap-2">
+              <span class="relative w-15 h-1 bg-aaa rounded-[10px] overflow-hidden inline-block">
+                <span style="width: ${asset.allocation}%; background-color: hsl(${asset.hue}, 50%, 50%);"
+                  class="absolute top-0 left-0 h-full rounded-[10px]"></span>
+              </span>
+              <span class="font-mono text-xs text-bbb">${asset.allocation}%</span>
+            </div>
+          </div>
+          <button class="cancelBtn text-bbb hover:text-red-500 self-end mt-1" data-id="${asset.id}">
+            Delete
+          </button>
+        </div>
+      </div>`,
     )
     .join("");
 }
+
 function removeAssets(idtoremove) {
   let portfolio = JSON.parse(localStorage.getItem("portfolio")) || [];
   let updatePortfolio = portfolio.filter((asset) => asset.id !== idtoremove);
   localStorage.setItem("portfolio", JSON.stringify(updatePortfolio));
   renderAll();
 }
+mobileList.addEventListener("click", function (e) {
+  let expandBtn = e.target.closest(".expandBtn");
+  if (expandBtn) {
+    let detailPanel = expandBtn.nextElementSibling;
+    let chevron = expandBtn.querySelector(".chevron");
+    detailPanel.classList.toggle("hidden");
+    chevron.classList.toggle("rotate-180");
+    return;
+  }
+
+  let cancelBtn = e.target.closest(".cancelBtn");
+  if (cancelBtn) {
+    let idtoremove = cancelBtn.dataset.id;
+    removeAssets(idtoremove);
+  }
+});
 tbody.addEventListener("click", function (e) {
   let assestClicked = e.target.closest(".cancelBtn");
   if (assestClicked) {
@@ -290,7 +370,7 @@ function renderSummury(portfolioData) {
   if (portfolioData.length === 0) {
     let emptyContainer = document.createElement("div");
     emptyContainer.className =
-      "flex-col bg-white p-4 rounded-2xl w-3/4 summary-card";
+      "flex-col bg-white p-4 rounded-2xl w-full md:w-3/4 summary-card";
     emptyContainer.innerHTML = `
       <div class="flex flex-col items-center justify-center gap-2 p-8 text-center">
         <p class="text-lg font-semibold">No assets yet</p>
@@ -310,7 +390,8 @@ function renderSummury(portfolioData) {
     .reduce((acc, asset) => acc + asset.value, 0);
   let fiatExposure = parseFloat(((fiatValue / totalValue) * 100).toFixed(2));
   let container = document.createElement("div");
-  container.className = "flex-col bg-white p-4 rounded-2xl w-3/4 summary-card";
+  container.className =
+    "flex-col bg-white p-4 rounded-2xl w-full md:w-3/4 summary-card";
 
   container.innerHTML = `
               <div class="flex flex-col gap-2 p-4">
@@ -363,7 +444,7 @@ function renderChart(portfolioData) {
     .map(
       (asset) => `
     <li>
-      <div class="flex justify-between items-center w-44">
+      <div class="flex justify-between items-center w-full lg:w-44">
         <div class="flex justify-self-start items-center gap-1.5">
           <p style="background-color: hsl(${asset.hue}, 50%, 50%);" class="h-2 w-2 rounded-3xl"></p>
           <p class="text-xs text-666">${asset.name}</p>
@@ -379,7 +460,7 @@ function renderChart(portfolioData) {
 
   let chartContainer = document.createElement("div");
   chartContainer.className =
-    "bg-white w-1/4 rounded-2xl p-3.5 flex flex-col gap-4 summary-chart";
+    "bg-white w-full md:w-1/4 rounded-2xl p-3.5 flex flex-col gap-4 summary-chart";
   chartContainer.innerHTML = `
     <div class="flex justify-items-start mt-2">
       <p class="text-xs text-aaa uppercase tracking-wider">
