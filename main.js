@@ -410,7 +410,7 @@ function renderSummury(portfolioData) {
               </p>
             </div>
             <hr class="text-gray-300" />
-            <div class="flex w-full justify-items-start gap-12 mt-2 mb-12 p-4">
+            <div class="flex flex-col sm:flex-row w-full justify-items-start gap-3 sm:gap-12 mt-2 mb-12 p-4">
               <div class="flex flex-col gap-1">
                 <p class="text-aaa text-xs uppercase tracking-wider">
                   top holding
